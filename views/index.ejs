@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>OpenTok Hello World</title>
+    <% if(otjsApiUrl) { %>
+    <script>
+      var OTProperties = {
+        apiURL: "<%= otjsApiUrl %>",
+      };
+    </script>
+    <% } %>
+    <script src="<%= otjsSrcUrl %>"></script>
+    <script type="text/javascript">
+        var apiKey = '<%= apiKey %>';
+        var appId = '<%= appId %>';
+        var sessionId = '<%= sessionId %>';
+        var token = '<%= token %>';
+    </script>
+    <style>
+      #log-div {
+        background: silver;
+        width: 100%;
+        min-height: 200px;
+        margin: 8px 0;
+        overflow-y:auto;
+      }
+    </style>
+</head>
+<body>
+    <h2>Hello, World!</h2>
+
+    <div id="publisher"></div>
+
+    <div id="subscribers"></div>
+    <div>
+     <button id="start-archive-btn">Start archive</button>
+     <button id="stop-archive-btn">Stop archive</button>
+     <button id="force-disconnect-btn" click="forceDisconnect()">Force disconnect me</button>
+     <button id="force-mute-stream-btn" click="forceMuteStream()">Force mute me</button>
+     <button id="force-mute-all-btn" click="forceMuteAll()">Force mute all</button>
+     <button id="disable-force-mute-btn" click="disableForceMute()">Disable force mute</button>
+     <button id="signal-me-btn" click="signalMe()">Send signal to me</button>
+     <button id="signal-all-btn" click="signalAll()">Send signal to everyone</button>
+     <button id="get-stream-btn" click="getStream()">Get stream info in console</button>
+     <button id="set-class-list-btn" click="setStreamClassLists()">Set my stream's class list</button>
+     <button id="list-streams-btn">List streams in console</button>
+     <button id="list-archives-btn">List archives in console</button>
+   </div>
+   <div id="log-div">
+     <pre id="log-pre"></pre>
+   </div>
+    <script src="/js/helloworld.js"></script>
+</body>
+</html>
