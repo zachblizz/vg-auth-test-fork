@@ -15,6 +15,7 @@ var otOptions = {
   vgAuth: !!appId,
   apiUrl: apiUrl
 };
+var port = process.env.PORT || 3000;
 
 // Verify that either the OpenTok API key and API secret
 // or the VG app ID and private key path are defined
@@ -25,8 +26,8 @@ if (!(apiKey && apiSecret) && !(appId && keyPath)) {
 
 // Starts the express app
 function init() {
-  app.listen(3000, function () {
-    console.log('You\'re app is now ready at http://localhost:3000/');
+  app.listen(port, function () {
+    console.log('You\'re app is now ready at http://localhost:' + port);
   });
 }
 
