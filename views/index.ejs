@@ -21,18 +21,24 @@
       #log-div {
         background: silver;
         width: 100%;
-        min-height: 200px;
+        max-width: 800px;
+        height: 400px;
         margin: 8px 0;
-        overflow-y:auto;
+        overflow-y: auto;
+        border: black 1px solid;
+      }
+      #streams-container {
+        display: flex;
       }
     </style>
 </head>
 <body>
-    <h2>Hello, World!</h2>
+    <div id="streams-container">
+      <div id="publisher"></div>
 
-    <div id="publisher"></div>
+      <div id="subscribers"></div>
+    </div>
 
-    <div id="subscribers"></div>
     <div>
      <button id="start-archive-btn">Start archive</button>
      <button id="stop-archive-btn">Stop archive</button>

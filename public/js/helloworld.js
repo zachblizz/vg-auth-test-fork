@@ -13,7 +13,6 @@ var log = function (str) {
   console.log(logStr);
   logPre.innerText += logStr;
   logDiv.scrollTop = logDiv.scrollHeight;
-
 }
 
 session.on({
@@ -23,11 +22,11 @@ session.on({
 
   streamCreated: function (event) {
     log('new subscriber stream ' + event.stream.id);
-    session.subscribe(event.stream, 'subscribers', { insertMode: 'append' });
+    session.subscribe(event.stream, 'streams-container', { insertMode: 'append' });
   },
   streamDestroyed: function (event) {
     log('subscriber stream e' + event.stream.id);
-    session.subscribe(event.stream, 'subscribers', { insertMode: 'append' });
+    session.subscribe(event.stream, 'streams-container', { insertMode: 'append' });
   },
   signal: function(e) {
     log('signal ', JSON.stringify(e, null, 2));
@@ -35,6 +34,7 @@ session.on({
   
   archiveStarted: function(e) {
     log('archiveStarted ' + e.id);
+    archiveId = e.id;
   },
   
   archiveStopped: function(e) {
@@ -44,7 +44,6 @@ session.on({
   sessionDisconnected: function(e) {
     log('sessionDisconnected');
   }
-
 });
 
 publisher.on('streamCreated', function (event) {
