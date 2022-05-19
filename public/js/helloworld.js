@@ -56,7 +56,7 @@ window.addEventListener('DOMContentLoaded', function () {
   logDiv = document.getElementById('log-div');
   document.getElementById('start-archive-btn').addEventListener('click', function () {
     log('startArchive')
-    fetch('/startArchive/', {
+    fetch('/startArchive/' + sessionId, {
       method: 'get'
     })
       .then(function (response) { return response.json(); })
@@ -68,7 +68,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
   document.getElementById('stop-archive-btn').addEventListener('click', function () {
     log('stopArchive ' + archiveId);
-    fetch('/stopArchive/' + archiveId, {
+    fetch('/stopArchive/' +  archiveId, {
       method: 'get'
     })
       .then(function (response) { return response.json(); })
@@ -79,43 +79,44 @@ window.addEventListener('DOMContentLoaded', function () {
   });
 
   document.getElementById('force-disconnect-btn').addEventListener('click', function () {
-    fetch('/forceDisconnect/' + session.connection.id, {
+    fetch('/forceDisconnect/' + sessionId + '/' +  session.connection.id, {
       method: 'get'
     }).then(function (response) { log(JSON.stringify(response)); });
   });
 
   document.getElementById('force-mute-all-btn').addEventListener('click', function () {
-    fetch('/forceMuteAll/', {
+    fetch('/forceMuteAll/' + sessionId, {
       method: 'get'
     }).then(function (response) { log(response); });
   });
 
   document.getElementById('force-mute-stream-btn').addEventListener('click', function () {
-    fetch('/forceMuteStream/' + streamId, {
+    fetch('/forceMuteStream/' + sessionId + '/' + streamId, {
       method: 'get'
     }).then(function (response) { log(response); });
   });
 
   document.getElementById('disable-force-mute-btn').addEventListener('click', function () {
-    fetch('/disableForceMute/' + streamId, {
+    fetch('/disableForceMute/' + sessionId + '/' + streamId, {
       method: 'get'
     }).then(function (response) { log(response); });
   });
 
   document.getElementById('signal-me-btn').addEventListener('click', function () {
-    fetch('/signalConnection/' + session.connection.id, {
+    fetch('/signalConnection/' + sessionId + '/' + session.connection.id, {
       method: 'get'
     });
   });
 
   document.getElementById('signal-all-btn').addEventListener('click', function () {
-    fetch('/signalAll/', {
+    console.log(23342 + '/signalAll/' + sessionId)
+    fetch('/signalAll/' + sessionId, {
       method: 'get'
     });
   });
 
   document.getElementById('list-streams-btn').addEventListener('click', function () {
-    fetch('/listStreams/', {
+    fetch('/listStreams/' + sessionId, {
       method: 'get'
     })
       .then(function (response) { return response.json(); })
@@ -123,7 +124,7 @@ window.addEventListener('DOMContentLoaded', function () {
   });
 
   document.getElementById('get-stream-btn').addEventListener('click', function () {
-    fetch('/getStream/' + streamId, {
+    fetch('/getStream/' + sessionId + '/' + streamId, {
       method: 'get'
     })
       .then(function (response) { return response.json(); })
@@ -131,7 +132,7 @@ window.addEventListener('DOMContentLoaded', function () {
   });
 
   document.getElementById('list-archives-btn').addEventListener('click', function () {
-    fetch('/listArchives/', {
+    fetch('/listArchives/' + sessionId, {
       method: 'get'
     })
       .then(function (response) { return response.json(); })
@@ -139,7 +140,7 @@ window.addEventListener('DOMContentLoaded', function () {
   });
 
   document.getElementById('set-class-list-btn').addEventListener('click', function () {
-    fetch('/setStreamClassLists/' + streamId, {
+    fetch('/setStreamClassLists/' + sessionId + '/' + streamId, {
       method: 'get'
     })
       .then(log('stream class list updated'));
