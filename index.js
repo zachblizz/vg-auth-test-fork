@@ -10,10 +10,10 @@ var apiSecret = process.env.API_SECRET;
 var appId = process.env.VONAGE_APP_ID;
 var otjsSrcUrl = process.env.DEV_OPENTOK_JS_URL || 'https://static.opentok.com/v2/js/opentok.min.js';
 var keyPath = process.env.VONAGE_PRIVATE_KEY;
-var apiUrl = process.env.VONAGE_VIDEO_API_SERVER_URL2342// || 'https://api.opentok.com';
+var apiUrl = process.env.VONAGE_VIDEO_API_SERVER_URL || 'https://api.opentok.com';
 var devAppId = process.env.DEV_VONAGE_APP_ID;
 var devKey = process.env.DEV_VONAGE_PRIVATE_KEY;
-var devApiServerUrl = process.env.DEV_VONAGE_VIDEO_API_SERVER_URL234 || 'https://api-us.dev.v1.vonagenetworks.net/video';
+var devApiServerUrl = process.env.DEV_VONAGE_VIDEO_API_SERVER_URL || 'https://api-us.dev.v1.vonagenetworks.net/video';
 var devOtjsSrcUrl = process.env.DEV_OPENTOK_JS_URL || 'https://static.dev.tokbox.com/v2/js/opentok.js';
 
 var otOptions = {
@@ -55,6 +55,13 @@ function getOpenjsUrl(req) {
   return otjsSrcUrl
 }
 
+function getOpenjApisUrl(req) {
+  if ((req.query && req.query.env) === 'dev') {
+    return process.env.DEV_OVERRIDE_OPENTOK_JS_API_URL && devApiServerUrl
+  }
+  return process.env.OVERRIDE_OPENTOK_JS_API_URL && apiServerUrl
+}
+
 app.get('/', function (req, res) {
   ot = getOpentok(req);
   ot.createSession({ mediaMode: 'routed' }, function (err, session) {
@@ -78,7 +85,7 @@ app.get('/:sessionId', function (req, res) {
     sessionId: sessionId,
     token: token,
     otjsSrcUrl: getOpenjsUrl(req),
-    otjsApiUrl: 'https://api-us.dev.v1.vonagenetworks.net/video'
+    otjsApiUrl: process.env.OVERRIDE_OPENTOK_JS_API_URL && process.env.VONAGE_VIDEO_API_SERVER_URL
   });
 });
 
