@@ -1,6 +1,6 @@
 /* global OT, apiKey, appId, sessionId, token */
 
-var session = appId ? OT.initSession(appId, sessionId) : OT.initSession(apiKey, sessionId);
+var session = OT.initSession(appId, sessionId);
 
 var publisher = OT.initPublisher('publisher');
 var streamId;
@@ -17,6 +17,7 @@ var log = function (str) {
 
 session.on({
   sessionConnected: function () {
+    log('connected to session ' + sessionId);
     session.publish(publisher);
   },
 
@@ -56,7 +57,7 @@ window.addEventListener('DOMContentLoaded', function () {
   logDiv = document.getElementById('log-div');
   document.getElementById('start-archive-btn').addEventListener('click', function () {
     log('startArchive')
-    fetch('/startArchive/' + sessionId, {
+    fetch('/startArchive/' + sessionId + location.search, {
       method: 'get'
     })
       .then(function (response) { return response.json(); })
@@ -68,7 +69,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
   document.getElementById('stop-archive-btn').addEventListener('click', function () {
     log('stopArchive ' + archiveId);
-    fetch('/stopArchive/' +  archiveId, {
+    fetch('/stopArchive/' +  archiveId + location.search, {
       method: 'get'
     })
       .then(function (response) { return response.json(); })
@@ -79,44 +80,44 @@ window.addEventListener('DOMContentLoaded', function () {
   });
 
   document.getElementById('force-disconnect-btn').addEventListener('click', function () {
-    fetch('/forceDisconnect/' + sessionId + '/' +  session.connection.id, {
+    fetch('/forceDisconnect/' + sessionId + '/' +  session.connection.id + location.search, {
       method: 'get'
     }).then(function (response) { log(JSON.stringify(response)); });
   });
 
   document.getElementById('force-mute-all-btn').addEventListener('click', function () {
-    fetch('/forceMuteAll/' + sessionId, {
+    fetch('/forceMuteAll/' + sessionId + location.search, {
       method: 'get'
     }).then(function (response) { log(response); });
   });
 
   document.getElementById('force-mute-stream-btn').addEventListener('click', function () {
-    fetch('/forceMuteStream/' + sessionId + '/' + streamId, {
+    fetch('/forceMuteStream/' + sessionId + '/' + streamId + location.search, {
       method: 'get'
     }).then(function (response) { log(response); });
   });
 
   document.getElementById('disable-force-mute-btn').addEventListener('click', function () {
-    fetch('/disableForceMute/' + sessionId + '/' + streamId, {
+    fetch('/disableForceMute/' + sessionId + '/' + streamId + location.search, {
       method: 'get'
     }).then(function (response) { log(response); });
   });
 
   document.getElementById('signal-me-btn').addEventListener('click', function () {
-    fetch('/signalConnection/' + sessionId + '/' + session.connection.id, {
+    fetch('/signalConnection/' + sessionId + '/' + session.connection.id + location.search, {
       method: 'get'
     });
   });
 
   document.getElementById('signal-all-btn').addEventListener('click', function () {
     console.log(23342 + '/signalAll/' + sessionId)
-    fetch('/signalAll/' + sessionId, {
+    fetch('/signalAll/' + sessionId + location.search, {
       method: 'get'
     });
   });
 
   document.getElementById('list-streams-btn').addEventListener('click', function () {
-    fetch('/listStreams/' + sessionId, {
+    fetch('/listStreams/' + sessionId + location.search, {
       method: 'get'
     })
       .then(function (response) { return response.json(); })
@@ -124,7 +125,7 @@ window.addEventListener('DOMContentLoaded', function () {
   });
 
   document.getElementById('get-stream-btn').addEventListener('click', function () {
-    fetch('/getStream/' + sessionId + '/' + streamId, {
+    fetch('/getStream/' + sessionId + '/' + streamId + location.search, {
       method: 'get'
     })
       .then(function (response) { return response.json(); })
@@ -132,7 +133,7 @@ window.addEventListener('DOMContentLoaded', function () {
   });
 
   document.getElementById('list-archives-btn').addEventListener('click', function () {
-    fetch('/listArchives/' + sessionId, {
+    fetch('/listArchives/' + sessionId + location.search, {
       method: 'get'
     })
       .then(function (response) { return response.json(); })
@@ -140,7 +141,7 @@ window.addEventListener('DOMContentLoaded', function () {
   });
 
   document.getElementById('set-class-list-btn').addEventListener('click', function () {
-    fetch('/setStreamClassLists/' + sessionId + '/' + streamId, {
+    fetch('/setStreamClassLists/' + sessionId + '/' + streamId + location.search, {
       method: 'get'
     })
       .then(log('stream class list updated'));
