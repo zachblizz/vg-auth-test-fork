@@ -36,7 +36,6 @@ app.listen(port, function () {
 
 function getOpentok(req) {
   if ((req.query && req.query.env) === 'dev') {
-    console.log(req.originalUrl, devApiServerUrl);
     return new OpenTok(devAppId, devKey, {
       vgAuth: !!devAppId,
       apiUrl: devApiServerUrl
@@ -55,7 +54,7 @@ function getOpenjsUrl(req) {
   return otjsSrcUrl
 }
 
-function getOpenjApisUrl(req) {
+function getOpenTokjsApisUrl(req) {
   if ((req.query && req.query.env) === 'dev') {
     return process.env.DEV_OVERRIDE_OPENTOK_JS_API_URL && devApiServerUrl
   }
@@ -75,24 +74,22 @@ app.get('/', function (req, res) {
 });
 
 app.get('/:sessionId', function (req, res) {
-  console.log(44, process.env.OVERRIDE_OPENTOK_JS_API_URL)
   var sessionId = req.params.sessionId;
   ot = getOpentok(req);
   var token = ot.generateToken(sessionId);
   res.render('index.ejs', {
     apiKey: apiKey,
-    appId: appId,
+    appId: ((req.query && req.query.env) === 'dev') ? devAppId : appId,
     sessionId: sessionId,
     token: token,
     otjsSrcUrl: getOpenjsUrl(req),
-    otjsApiUrl: process.env.OVERRIDE_OPENTOK_JS_API_URL && process.env.VONAGE_VIDEO_API_SERVER_URL
+    otjsApiUrl: getOpenTokjsApisUrl(req)
   });
 });
 
 app.get('/startArchive/:sessionId', function (req, res) {
   ot = getOpentok(req);
   ot.startArchive(req.params.sessionId, function (error, archive) {
-    console.log(3333, error, archive)
     if (error) return res.set(400).send();
     return res.send(archive);
   });
