@@ -23,11 +23,6 @@ export VONAGE_VIDEO_API_SERVER_URL=https://api.dev.opentok.com
 export OPENTOK_JS_URL=https://static.opentok.com/v2/js/opentok.min.js
 ```
 
-The `VONAGE_VIDEO_API_SERVER_URL` is used for Video API REST calls from the Node server.
-To have OpenTok.js in the web app also use the `VONAGE_VIDEO_API_SERVER_URL` for API calls
-(instead of the API URL loaded from the OpenTok.js config), set `OVERRIDE_OPENTOK_JS_API_URL`
-to `true`):
-
 Also, set these for the dev instance:
 
 ```
@@ -37,8 +32,14 @@ export DEV_VONAGE_VIDEO_API_SERVER_URL=https://api.dev.opentok.com
 export DEV_OPENTOK_JS_URL=https://static.dev.tokbox.com/v2/js/opentok.js
 ```
 
+The `VONAGE_VIDEO_API_SERVER_URL` is used for Video API REST calls from the Node server.
+To have OpenTok.js in the web app also use the `VONAGE_VIDEO_API_SERVER_URL` for API calls
+(instead of the API URL loaded from the OpenTok.js config), set `OVERRIDE_OPENTOK_JS_API_URL` 
+(for production) and/or `DEV_OVERRIDE_OPENTOK_JS_API_URL` to `true`:
+
 ```
 export OVERRIDE_OPENTOK_JS_API_URL=true
+export DEV_OVERRIDE_OPENTOK_JS_API_URL=true
 ```
 
 Finally, start the app using node:

@@ -68,6 +68,7 @@ app.get('/', function (req, res) {
 });
 
 app.get('/:sessionId', function (req, res) {
+  console.log(44, process.env.OVERRIDE_OPENTOK_JS_API_URL)
   var sessionId = req.params.sessionId;
   ot = getOpentok(req);
   var token = ot.generateToken(sessionId);
@@ -77,7 +78,7 @@ app.get('/:sessionId', function (req, res) {
     sessionId: sessionId,
     token: token,
     otjsSrcUrl: getOpenjsUrl(req),
-    otjsApiUrl: process.env.OVERRIDE_OPENTOK_JS_API_URL && process.env.VONAGE_VIDEO_API_SERVER_URL
+    otjsApiUrl: 'https://api-us.dev.v1.vonagenetworks.net/video'
   });
 });
 
