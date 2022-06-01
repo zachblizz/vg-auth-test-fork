@@ -30,6 +30,13 @@
       #streams-container {
         display: flex;
       }
+      #controls {
+        max-width: 900px;
+        margin-top: 8px;
+      }
+      #controls button {
+        margin: 4px 0;
+      }
     </style>
 </head>
 <body>
@@ -39,7 +46,7 @@
       <div id="subscribers"></div>
     </div>
 
-    <div>
+    <div id="controls">
      <button id="start-archive-btn">Start archive</button>
      <button id="stop-archive-btn">Stop archive</button>
      <button id="force-disconnect-btn" click="forceDisconnect()">Force disconnect me</button>
@@ -48,10 +55,10 @@
      <button id="disable-force-mute-btn" click="disableForceMute()">Disable force mute</button>
      <button id="signal-me-btn" click="signalMe()">Send signal to me</button>
      <button id="signal-all-btn" click="signalAll()">Send signal to everyone</button>
-     <button id="get-stream-btn" click="getStream()">Get stream info in console</button>
+     <button id="get-stream-btn" click="getStream()">Get stream info</button>
      <button id="set-class-list-btn" click="setStreamClassLists()">Set my stream's class list</button>
-     <button id="list-streams-btn">List streams in console</button>
-     <button id="list-archives-btn">List archives in console</button>
+     <button id="list-streams-btn">List streams</button>
+     <button id="list-archives-btn">List archives for session</button>
    </div>
    <div id="log-div">
      <pre id="log-pre"></pre>

@@ -106,7 +106,9 @@ app.get('/stopArchive/:id', function (req, res) {
 
 app.get('/listArchives/:sessionId', function (req, res) {
   ot = getOpentok(req);
-  ot.listArchives(req.params.sessionId, function (error, archives) {
+  ot.listArchives({
+    sessionId: req.params.sessionId
+  }, function (error, archives) {
     console.log('listArchives', error, archives);
     if (error) return res.set(400).send();
     return res.send(archives);
@@ -125,7 +127,7 @@ app.get('/forceDisconnect/:sessionId/:connectionId', function (req, res) {
 app.get('/forceMuteStream/:sessionId/:streamId', function (req, res) {
   ot = getOpentok(req);
   ot.forceDisconnect(req.params.sessionId, req.params.streamId, function (error) {
-    console.log('forceDisconnect', req.params.streamId, error);
+    console.log('forceMuteStream', req.params.streamId, error);
     if (error) return res.set(400).send();
     return res.send('');
   });

@@ -82,25 +82,25 @@ window.addEventListener('DOMContentLoaded', function () {
   document.getElementById('force-disconnect-btn').addEventListener('click', function () {
     fetch('/forceDisconnect/' + sessionId + '/' +  session.connection.id + location.search, {
       method: 'get'
-    }).then(function (response) { log(JSON.stringify(response)); });
+    }).then(function (response) { log('forced to disconnect'); });
   });
 
   document.getElementById('force-mute-all-btn').addEventListener('click', function () {
     fetch('/forceMuteAll/' + sessionId + location.search, {
       method: 'get'
-    }).then(function (response) { log(response); });
+    }).then(function (response) { log('session muted'); });
   });
 
   document.getElementById('force-mute-stream-btn').addEventListener('click', function () {
     fetch('/forceMuteStream/' + sessionId + '/' + streamId + location.search, {
       method: 'get'
-    }).then(function (response) { log(response); });
+    }).then(function (response) { log('stream muted'); });
   });
 
   document.getElementById('disable-force-mute-btn').addEventListener('click', function () {
-    fetch('/disableForceMute/' + sessionId + '/' + streamId + location.search, {
+    fetch('/disableForceMute/' + sessionId + location.search, {
       method: 'get'
-    }).then(function (response) { log(response); });
+    }).then(function (response) { log('force mute disabled'); });
   });
 
   document.getElementById('signal-me-btn').addEventListener('click', function () {
@@ -129,7 +129,7 @@ window.addEventListener('DOMContentLoaded', function () {
       method: 'get'
     })
       .then(function (response) { return response.json(); })
-      .then(function (data) { log(JSON.stringify(data)); });
+      .then(function (data) { log(JSON.stringify(data, null, 2)); });
   });
 
   document.getElementById('list-archives-btn').addEventListener('click', function () {
