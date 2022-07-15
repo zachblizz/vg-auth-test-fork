@@ -48,7 +48,7 @@ Finally, start the app using node:
 $ node index.js
 ```
 
-Or, you can run `npm start` in the root directory of the opentok-node project.
+Or, you can run `npm start` in the root directory of the project.
 
 ### To test in the production environment:
 

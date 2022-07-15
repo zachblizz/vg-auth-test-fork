@@ -1,4 +1,4 @@
-/* global OT, apiKey, appId, sessionId, token */
+/* global OT, appId, sessionId, token */
 
 var session = OT.initSession(appId, sessionId);
 
@@ -30,7 +30,7 @@ session.on({
     session.subscribe(event.stream, 'streams-container', { insertMode: 'append' });
   },
   signal: function(e) {
-    log('signal ', JSON.stringify(e, null, 2));
+    log('signal data:' + e.data + ' -- type: ' + e.type);
   },
   
   archiveStarted: function(e) {
