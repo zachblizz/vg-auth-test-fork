@@ -8,7 +8,7 @@ var fs = require('fs');
 
 var vonageVideo;
 var appId = process.env.VONAGE_APP_ID;
-var otjsSrcUrl = process.env.DEV_OPENTOK_JS_URL || 'https://static.opentok.com/v2/js/opentok.min.js';
+var otjsSrcUrl = process.env.OPENTOK_JS_URL || 'https://static.opentok.com/v2/js/opentok.min.js';
 var keyPath = process.env.VONAGE_PRIVATE_KEY;
 var apiUrl = process.env.VONAGE_VIDEO_API_SERVER_URL || 'https://api.opentok.com';
 var devAppId = process.env.DEV_VONAGE_APP_ID;
