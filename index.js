@@ -1,22 +1,23 @@
 /* eslint-disable no-console, no-path-concat */
 
 // Dependencies
-var express = require('express');
-var Vonage = require('@vonage/video');
-var app = express();
-var fs = require('fs');
+const express = require('express');
+const Vonage = require('@vonage/video');
 
-var vonageVideo;
-var appId = process.env.VONAGE_APP_ID;
-var otjsSrcUrl = process.env.OPENTOK_JS_URL || 'https://static.opentok.com/v2/js/opentok.min.js';
-var keyPath = process.env.VONAGE_PRIVATE_KEY;
-var apiUrl = process.env.VONAGE_VIDEO_API_SERVER_URL || 'https://video.api.vonage.com';
-var devAppId = process.env.DEV_VONAGE_APP_ID;
-var devKey = process.env.DEV_VONAGE_PRIVATE_KEY;
-var devApiServerUrl = process.env.DEV_VONAGE_VIDEO_API_SERVER_URL || 'https://video.api.dev.vonage.com';
-var devOtjsSrcUrl = process.env.DEV_OPENTOK_JS_URL || 'https://static.dev.tokbox.com/v2/js/opentok.js';
+const app = express();
+const fs = require('fs');
 
-var port = process.env.PORT || 3000;
+let vonageVideo;
+const appId = process.env.VONAGE_APP_ID;
+const otjsSrcUrl = process.env.OPENTOK_JS_URL || 'https://static.opentok.com/v2/js/opentok.min.js';
+const keyPath = process.env.VONAGE_PRIVATE_KEY;
+const apiUrl = process.env.VONAGE_VIDEO_API_SERVER_URL || 'https://video.api.vonage.com';
+const devAppId = process.env.DEV_VONAGE_APP_ID;
+const devKey = process.env.DEV_VONAGE_PRIVATE_KEY;
+const devApiServerUrl = process.env.DEV_VONAGE_VIDEO_API_SERVER_URL || 'https://video.api.dev.vonage.com';
+const devOtjsSrcUrl = process.env.DEV_OPENTOK_JS_URL || 'https://static.dev.tokbox.com/v2/js/opentok.js';
+
+const port = process.env.PORT || 3000;
 
 // Verify that the VG app ID and private key path are defined
 if (!(appId && keyPath && devAppId && devKey)) {
@@ -24,10 +25,11 @@ if (!(appId && keyPath && devAppId && devKey)) {
   process.exit(1);
 }
 
-app.use(express.static(__dirname + '/public')); //
+app.use(express.static(`${__dirname}/public`)); //
+app.use(express.json()); // for parsing application/json
 
-app.listen(port, function () {
-  console.log('You\'re app is now ready at http://localhost:' + port);
+app.listen(port, () => {
+  console.log(`You're app is now ready at http://localhost:${port}`);
 });
 
 function getVonageVideo(req) {
@@ -35,13 +37,13 @@ function getVonageVideo(req) {
     return new Vonage.Video({
       applicationId: devAppId,
       privateKey: (devKey.indexOf('-----BEGIN PRIVATE KEY-----') > -1) ? devKey : fs.readFileSync(devKey),
-      baseUrl: devApiServerUrl
+      baseUrl: devApiServerUrl,
     });
   }
   return new Vonage.Video({
     applicationId: appId,
     privateKey: (keyPath.indexOf('-----BEGIN PRIVATE KEY-----') > -1) ? keyPath : fs.readFileSync(keyPath),
-    baseUrl: apiUrl
+    baseUrl: apiUrl,
   });
 }
 
@@ -49,68 +51,73 @@ function getOpenjsUrl(req) {
   if ((req.query && req.query.env) === 'dev') {
     return devOtjsSrcUrl;
   }
-  return otjsSrcUrl
+  return otjsSrcUrl;
 }
 
 function getOpenTokjsApisUrl(req) {
   if ((req.query && req.query.env) === 'dev') {
-    return process.env.DEV_OVERRIDE_OPENTOK_JS_API_URL && devApiServerUrl
+    return process.env.DEV_OVERRIDE_OPENTOK_JS_API_URL && devApiServerUrl;
   }
   return process.env.OVERRIDE_OPENTOK_JS_API_URL && apiUrl;
 }
 
-app.get('/', async function (req, res) {
+app.get('/', async (req, res) => {
   vonageVideo = getVonageVideo(req);
-  try{
-    var session = await vonageVideo.createSession({
+  try {
+    const session = await vonageVideo.createSession({
       mediaMode: 'routed',
     });
-    console.log('new session:', session)
-    var query = (req.query && req.query.env) ? '?env=' + req.query.env : '';
-    return res.redirect('/' + session[0].session_id + query);
-  } catch(err) {
+    console.log('new session:', session);
+    const query = (req.query && req.query.env) ? `?env=${req.query.env}` : '';
+    return res.redirect(`/${session.sessionId}${query}`);
+  } catch (err) {
     return res.set(400).send(err.message);
   }
 });
 
-app.get('/:sessionId', function (req, res) {
-  var sessionId = req.params.sessionId;
+app.get('/:sessionId', (req, res) => {
+  const { sessionId } = req.params;
   vonageVideo = getVonageVideo(req);
-  var token = vonageVideo.generateClientToken(sessionId);
+  const token = vonageVideo.generateClientToken(sessionId);
   res.render('index.ejs', {
     appId: ((req.query && req.query.env) === 'dev') ? devAppId : appId,
-    sessionId: sessionId,
-    token: token,
+    sessionId,
+    token,
     otjsSrcUrl: getOpenjsUrl(req),
-    otjsApiUrl: getOpenTokjsApisUrl(req)
+    otjsApiUrl: getOpenTokjsApisUrl(req),
   });
 });
 
-app.get('/startArchive/:sessionId', async function (req, res) {
+app.post('/startArchive/:sessionId', async (req, res) => {
+  const { resolution, outputMode } = req.body;
   vonageVideo = getVonageVideo(req);
+  const archiveOptions = {
+    resolution,
+    outputMode,
+  };
   try {
-    var archive = await vonageVideo.startArchive(req.params.sessionId);
+    const archive = await vonageVideo.startArchive(req.params.sessionId, archiveOptions);
     return res.send(archive);
   } catch (error) {
     return res.set(400).send();
   }
 });
 
-app.get('/stopArchive/:id', async function (req, res) {
+app.get('/stopArchive/:id', async (req, res) => {
   vonageVideo = getVonageVideo(req);
   try {
-    var archive = await vonageVideo.stopArchive(req.params.id);
+    const archive = await vonageVideo.stopArchive(req.params.id);
     return res.send(archive);
   } catch (error) {
     return res.set(400).send();
   }
 });
 
-app.get('/listArchives/:sessionId', async function (req, res) {
+app.get('/listArchives/:sessionId', async (req, res) => {
   vonageVideo = getVonageVideo(req);
   try {
-    var archives = await vonageVideo.searchArchives({
-      sessionId: req.params.sessionId
+    const archives = await vonageVideo.searchArchives({
+      sessionId: req.params.sessionId,
     });
     return res.send(archives);
   } catch (error) {
@@ -118,7 +125,7 @@ app.get('/listArchives/:sessionId', async function (req, res) {
   }
 });
 
-app.get('/forceDisconnect/:sessionId/:connectionId', async function (req, res) {
+app.get('/forceDisconnect/:sessionId/:connectionId', async (req, res) => {
   vonageVideo = getVonageVideo(req);
   try {
     await vonageVideo.disconnectClient(req.params.sessionId, req.params.connectionId);
@@ -128,7 +135,7 @@ app.get('/forceDisconnect/:sessionId/:connectionId', async function (req, res) {
   }
 });
 
-app.get('/forceMuteStream/:sessionId/:streamId', async function (req, res) {
+app.get('/forceMuteStream/:sessionId/:streamId', async (req, res) => {
   vonageVideo = getVonageVideo(req);
   try {
     await vonageVideo.muteStream(req.params.sessionId, req.params.streamId);
@@ -138,7 +145,7 @@ app.get('/forceMuteStream/:sessionId/:streamId', async function (req, res) {
   }
 });
 
-app.get('/forceMuteAll/:sessionId', async function (req, res) {
+app.get('/forceMuteAll/:sessionId', async (req, res) => {
   vonageVideo = getVonageVideo(req);
   try {
     await vonageVideo.muteAllStreams(req.params.sessionId, true);
@@ -148,7 +155,7 @@ app.get('/forceMuteAll/:sessionId', async function (req, res) {
   }
 });
 
-app.get('/disableForceMute/:sessionId', async function (req, res) {
+app.get('/disableForceMute/:sessionId', async (req, res) => {
   vonageVideo = getVonageVideo(req);
   try {
     await vonageVideo.muteAllStreams(req.params.sessionId, false);
@@ -158,12 +165,12 @@ app.get('/disableForceMute/:sessionId', async function (req, res) {
   }
 });
 
-app.get('/signalAll/:sessionId', async function (req, res) {
+app.get('/signalAll/:sessionId', async (req, res) => {
   vonageVideo = getVonageVideo(req);
   try {
     await vonageVideo.sendSignal({
       data: 'hello from server',
-      type: 'test-type'
+      type: 'test-type',
     }, req.params.sessionId);
     return res.send('');
   } catch (error) {
@@ -171,45 +178,45 @@ app.get('/signalAll/:sessionId', async function (req, res) {
   }
 });
 
-app.get('/signalConnection/:sessionId/:connectionId', async function (req, res) {
+app.get('/signalConnection/:sessionId/:connectionId', async (req, res) => {
   vonageVideo = getVonageVideo(req, res);
   try {
     await vonageVideo.sendSignal({
-      data: 'hello from server to ' + req.params.connectionId,
-      type: 'test-type'
-    }, req.params.sessionId, req.params.connectionId, );
+      data: `hello from server to ${req.params.connectionId}`,
+      type: 'test-type',
+    }, req.params.sessionId, req.params.connectionId);
     return res.send('');
   } catch (error) {
     return res.set(400).send();
   }
 });
 
-app.get('/listStreams/:sessionId', async function (req, res) {
+app.get('/listStreams/:sessionId', async (req, res) => {
   vonageVideo = getVonageVideo(req);
   try {
-    var streams = await vonageVideo.getStreamInfo(req.params.sessionId);
+    const streams = await vonageVideo.getStreamInfo(req.params.sessionId);
     return res.send(streams);
   } catch (error) {
     return res.set(400).send();
   }
 });
 
-app.get('/getStream/:sessionId/:id', async function (req, res) {
+app.get('/getStream/:sessionId/:id', async (req, res) => {
   vonageVideo = getVonageVideo(req);
   try {
-    var stream = await vonageVideo.getStreamInfo(req.params.sessionId, req.params.id);
+    const stream = await vonageVideo.getStreamInfo(req.params.sessionId, req.params.id);
     return res.send(stream);
   } catch (error) {
     return res.set(400).send();
   }
 });
 
-app.get('/setStreamClassLists/:sessionId/:id', async function (req, res) {
+app.get('/setStreamClassLists/:sessionId/:id', async (req, res) => {
   vonageVideo = getVonageVideo(req);
   try {
-    var stream = await vonageVideo.setStreamClassLists(req.params.sessionId, [{
+    const stream = await vonageVideo.setStreamClassLists(req.params.sessionId, [{
       id: req.params.id,
-      layoutClassList: ['focus']
+      layoutClassList: ['focus'],
     }]);
     return res.send(stream);
   } catch (error) {

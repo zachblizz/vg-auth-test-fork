@@ -17,6 +17,13 @@
         var token = '<%= token %>';
     </script>
     <style>
+      body {
+        font-family: sans-serif;
+      }
+      hr {
+        max-width: 800px;
+        margin-left: 0;
+      }
       #log-div {
         background: silver;
         width: 100%;
@@ -35,6 +42,9 @@
       }
       #controls button {
         margin: 4px 0;
+      }
+      #archive-resolution-options {
+        margin-left: 20px;
       }
     </style>
 </head>
@@ -59,6 +69,32 @@
      <button id="list-streams-btn">List streams</button>
      <button id="list-archives-btn">List archives for session</button>
    </div>
+   <h4>Options:</h4>
+   <div id="archive-options">
+     <p>Archive output mode:
+       <input type="radio" id="composed" name="archiveOutputMode" value="composed" checked>
+       <label for="composed">Composed</label>
+       <input type="radio" id="individual" name="archiveOutputMode" value="individual">
+       <label for="individual">Individual stream</label>
+     </p>
+     <p id="archive-resolution-options">Archive resolution:
+       <input type="radio" id="sd" name="archiveResolution" value="640x480" checked>
+       <label for="sd">SD</label>
+       <input type="radio" id="hd" name="archiveResolution" value="1280x720">
+       <label for="hd">HD</label>
+       <input type="radio" id="fhd" name="archiveResolution" value="1920x1080">
+       <label for="fhd">FHD</label>
+     </p>
+     <!-- No UI for addArchiveStream or removeArchiveStream yet:
+     <p>Archive stream mode:
+       <input type="radio" id="html" name="archiveStreamMode" value="auto">
+       <label for="autp">Auto</label>
+       <input type="radio" id="css" name="archiveStreamMode" value="manual" checked>
+       <label for="manual">Manual (Up to two existing streams when the archive starts are included)</label>
+     </p>
+     -->
+     <p>MultiArchiveTag is not set. Simultaneous archives not enabled.</p>
+  </div>
    <div id="log-div">
      <pre id="log-pre"></pre>
    </div>
