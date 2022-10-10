@@ -55,10 +55,29 @@ publisher.on('streamCreated', (event) => {
 window.addEventListener('DOMContentLoaded', () => {
   logPre = document.getElementById('log-pre');
   logDiv = document.getElementById('log-div');
+  const archiveResolutionOptions = document.getElementById('archive-resolution-options');
+
+  const archiveOutputModeInputs = document.querySelectorAll('input[type=radio][name="archiveOutputMode"]');
+  archiveOutputModeInputs.forEach((inputElement) => inputElement.addEventListener('change', () => {
+    const opacity = (inputElement.value === 'individual') ? '0.2' : '1';
+    archiveResolutionOptions.style.opacity = opacity;
+  }));
+
   document.getElementById('start-archive-btn').addEventListener('click', () => {
-    log('startArchive');
+    const resolution = document.querySelector('input[name="archiveResolution"]:checked').value;
+    const outputMode = document.querySelector('input[name="archiveOutputMode"]:checked').value;
+
+    log(`startArchive  ${resolution} ${outputMode}`);
     fetch(`/startArchive/${sessionId}${location.search}`, {
-      method: 'get',
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        outputMode,
+        resolution: (outputMode === 'composed' && resolution) || undefined,
+      }),
     })
       .then((response) => response.json())
       .then((data) => {

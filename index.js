@@ -26,6 +26,7 @@ if (!(appId && keyPath && devAppId && devKey)) {
 }
 
 app.use(express.static(`${__dirname}/public`)); //
+app.use(express.json()); // for parsing application/json
 
 app.listen(port, () => {
   console.log(`You're app is now ready at http://localhost:${port}`);
@@ -68,7 +69,7 @@ app.get('/', async (req, res) => {
     });
     console.log('new session:', session);
     const query = (req.query && req.query.env) ? `?env=${req.query.env}` : '';
-    return res.redirect(`/${session[0].session_id}${query}`);
+    return res.redirect(`/${session.sessionId}${query}`);
   } catch (err) {
     return res.set(400).send(err.message);
   }
@@ -87,10 +88,15 @@ app.get('/:sessionId', (req, res) => {
   });
 });
 
-app.get('/startArchive/:sessionId', async (req, res) => {
+app.post('/startArchive/:sessionId', async (req, res) => {
+  const { resolution, outputMode } = req.body;
   vonageVideo = getVonageVideo(req);
+  const archiveOptions = {
+    resolution,
+    outputMode,
+  };
   try {
-    const archive = await vonageVideo.startArchive(req.params.sessionId);
+    const archive = await vonageVideo.startArchive(req.params.sessionId, archiveOptions);
     return res.send(archive);
   } catch (error) {
     return res.set(400).send();
