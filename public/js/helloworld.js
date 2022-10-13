@@ -5,6 +5,7 @@ const session = OT.initSession(appId, sessionId);
 const publisher = OT.initPublisher('publisher');
 let streamId;
 let archiveId;
+let lastArchiveId;
 let logPre;
 let logDiv;
 
@@ -40,6 +41,8 @@ session.on({
 
   archiveStopped(e) {
     log(`archiveStopped ${e.id}`);
+    lastArchiveId = e.id;
+    document.getElementById('delete-archive-btn').disabled = false;
   },
 
   sessionDisconnected() {
@@ -96,6 +99,20 @@ window.addEventListener('DOMContentLoaded', () => {
         archiveId = data.id;
         log(JSON.stringify(data, null, 2));
       });
+  });
+  document.getElementById('delete-archive-btn').addEventListener('click', () => {
+    log(`deleteArchive ${lastArchiveId}`);
+    fetch(`/deleteArchive/${lastArchiveId}${location.search}`, {
+      method: 'get',
+    }).then((response) => {
+      if (response.status === 200) {
+        document.getElementById('delete-archive-btn').disabled = true;
+        return log('archive deleted.');
+      }
+      return response.text().then((data) => {
+        log(`deleteArchive error: ${data}`);
+      });
+    });
   });
 
   document.getElementById('force-disconnect-btn').addEventListener('click', () => {

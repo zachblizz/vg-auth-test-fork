@@ -113,6 +113,16 @@ app.get('/stopArchive/:id', async (req, res) => {
   }
 });
 
+app.get('/deleteArchive/:id', async (req, res) => {
+  vonageVideo = getVonageVideo(req);
+  try {
+    await vonageVideo.deleteArchive(req.params.id);
+    return res.send();
+  } catch (error) {
+    return res.status(400).send(error.response.data.message);
+  }
+});
+
 app.get('/listArchives/:sessionId', async (req, res) => {
   vonageVideo = getVonageVideo(req);
   try {
