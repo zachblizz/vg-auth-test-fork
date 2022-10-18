@@ -9,7 +9,7 @@ const fs = require('fs');
 
 let vonageVideo;
 const appId = process.env.VONAGE_APP_ID;
-const otjsSrcUrl = process.env.OPENTOK_JS_URL || 'https://static.opentok.com/v2/js/opentok.min.js';
+const otjsSrcUrl = process.env.OPENTOK_JS_URL || 'https://unpkg.com/@vonage/video-client@2/dist/js/opentok.js';
 const keyPath = process.env.VONAGE_PRIVATE_KEY;
 const apiUrl = process.env.VONAGE_VIDEO_API_SERVER_URL || 'https://video.api.vonage.com';
 const devAppId = process.env.DEV_VONAGE_APP_ID;
