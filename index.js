@@ -37,13 +37,15 @@ function getVonageVideo(req) {
     return new Vonage.Video({
       applicationId: devAppId,
       privateKey: (devKey.indexOf('-----BEGIN PRIVATE KEY-----') > -1) ? devKey : fs.readFileSync(devKey),
-      baseUrl: devApiServerUrl,
+    }, {
+      videoHost: devApiServerUrl,
     });
   }
   return new Vonage.Video({
     applicationId: appId,
     privateKey: (keyPath.indexOf('-----BEGIN PRIVATE KEY-----') > -1) ? keyPath : fs.readFileSync(keyPath),
-    baseUrl: apiUrl,
+  }, {
+    videoHost: apiUrl,
   });
 }
 
@@ -70,6 +72,7 @@ app.get('/', async (req, res) => {
     const query = (req.query && req.query.env) ? `?env=${req.query.env}` : '';
     return res.redirect(`/${session.sessionId}${query}`);
   } catch (err) {
+    console.log('session create error:', err.response?.data?.detail, err.config);
     return res.status(400).send(err.message);
   }
 });
