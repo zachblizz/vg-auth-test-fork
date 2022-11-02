@@ -125,6 +125,28 @@ app.get('/deleteArchive/:id', async (req, res) => {
   }
 });
 
+app.post('/startBroadcast/:sessionId', async (req, res) => {
+  try {
+    const broadcast = await vonageVideo.startBroadcast(
+      req.params.sessionId,
+      req.body,
+    );
+    return res.send(broadcast);
+  } catch (error) {
+    return res.set(400).send(error.response.data);
+  }
+});
+
+app.get('/stopBroadcast/:id', async (req, res) => {
+  vonageVideo = getVonageVideo(req);
+  try {
+    const broadcast = await vonageVideo.stopBroadcast(req.params.id);
+    return res.send(broadcast);
+  } catch (error) {
+    return res.set(400).send(error.response.data);
+  }
+});
+
 app.get('/listArchives/:sessionId', async (req, res) => {
   vonageVideo = getVonageVideo(req);
   try {
@@ -132,6 +154,18 @@ app.get('/listArchives/:sessionId', async (req, res) => {
       sessionId: req.params.sessionId,
     });
     return res.send(archives);
+  } catch (error) {
+    return res.status(400).json({ errorMessage: error.response.data.message });
+  }
+});
+
+app.get('/listBroadcasts/:sessionId', async (req, res) => {
+  vonageVideo = getVonageVideo(req);
+  try {
+    const broadcasts = await vonageVideo.searchBroadcasts({
+      sessionId: req.params.sessionId,
+    });
+    return res.send(broadcasts);
   } catch (error) {
     return res.status(400).json({ errorMessage: error.response.data.message });
   }
