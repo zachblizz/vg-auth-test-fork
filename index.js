@@ -12,9 +12,10 @@ var vonageVideo;
 
 const setting = process.argv[2];
 console.log(`using env ${setting}`);
-const { appId, keyPath, apiUrl, otjsSrcUrl, overrideJsUrl, PORT } = env.config({
+const { appId, keyPath, apiUrl, otjsSrcUrl, overrideJsUrl } = env.config({
   path: path.resolve(__dirname, 'env', `.env.${setting}`),
 }).parsed;
+const { PORT } = env.config({ path: path.resolve(__dirname, 'env', '.env') });
 console.log({ appId, keyPath, apiUrl, otjsSrcUrl, overrideJsUrl });
 
 var port = PORT || 8008;
@@ -35,7 +36,7 @@ app.listen(port, function () {
 function getVonageVideo() {
   return new Vonage.Video({
     applicationId: appId,
-    privateKey: keyPath.indexOf('-----BEGIN PRIVATE KEY-----') > -1 ? keyPath : fs.readFileSync(keyPath),
+    privateKey: fs.readFileSync(keyPath),
     baseUrl: apiUrl,
   });
 }
@@ -46,13 +47,6 @@ function getOpenjsUrl() {
 
 function getOpenTokjsApisUrl() {
   return overrideJsUrl && apiUrl;
-}
-
-function loadEnvironment(setting = 'prod') {
-  console.log(`using env '${setting}'`);
-  if (currentEnv !== setting) {
-    currentEnv = setting;
-  }
 }
 
 app.get('/', async function (req, res) {
