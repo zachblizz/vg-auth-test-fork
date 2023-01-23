@@ -7,11 +7,18 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Launch Program",
-      "skipFiles": [
-        "<node_internals>/**"
-      ],
-      "program": "${workspaceFolder}/index.js"
+      "name": "DEV",
+      "skipFiles": ["<node_internals>/**"],
+      "program": "${workspaceFolder}/index.js",
+      "args": ["dev"]
+    }
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "PROD",
+      "skipFiles": ["<node_internals>/**"],
+      "program": "${workspaceFolder}/index.js",
+      "args": ["prod"]
     }
   ]
 }
