@@ -8,16 +8,17 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start:dev": "node index.js dev",
-    "start:prod": "node index.js prod"
+    "dev": "node index.js dev",
+    "prod": "node index.js prod"
   },
   "author": "Jeff Swartz",
   "license": "MIT",
   "dependencies": {
+    "@vonage/video": "^1.0.12",
+    "body-parser": "^1.20.1",
     "dotenv": "^16.0.1",
-    "@vonage/video": "0.10.0",
     "ejs": "^3.1.8",
-    "express": "^4.18.1"
+    "express": "^4.18.2"
   },
   "devDependencies": {
     "eslint": "8.25.0",

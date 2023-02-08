@@ -1,8 +1,7 @@
 /* global OT, appId, sessionId, token */
 
 const session = OT.initSession(appId, sessionId);
-const publisherOptions = (window.location.search.indexOf('audioOnly=true') > -1)
-  ? { videoSource: null } : {};
+const publisherOptions = window.location.search.indexOf('audioOnly=true') > -1 ? { videoSource: null } : {};
 const publisher = OT.initPublisher('publisher', publisherOptions);
 let streamId;
 let archiveId;
@@ -11,9 +10,9 @@ let lastArchiveId;
 let logPre;
 let logDiv;
 
-const log = function (str) {
+const log = function (str, lvl = 'log') {
   const logStr = `${new Date().toISOString()}: ${str}\n`;
-  console.log(logStr);
+  console[lvl](logStr);
   logPre.innerText += logStr;
   logDiv.scrollTop = logDiv.scrollHeight;
 };
@@ -52,7 +51,7 @@ session.on({
   },
 });
 
-publisher.on('streamCreated', (event) => {
+publisher.on('streamCreated', event => {
   log(`new published stream ${event.stream.id}`);
   streamId = event.stream.id;
 });
@@ -65,37 +64,43 @@ window.addEventListener('DOMContentLoaded', () => {
   const broadcastRtmp = document.getElementById('rtmp');
   const broadcastRtmpOptions = document.getElementById('broadcast-rtmp-options');
 
-  archiveOutputModeInputs.forEach((inputElement) => inputElement.addEventListener('change', () => {
-    const opacity = (inputElement.value === 'individual') ? '0.2' : '1';
-    archiveResolutionOptions.style.opacity = opacity;
-  }));
+  archiveOutputModeInputs.forEach(inputElement => {
+    inputElement.addEventListener('change', () => {
+      const opacity = inputElement.value === 'individual' ? '0.2' : '1';
+      archiveResolutionOptions.style.opacity = opacity;
+    });
+  });
 
   broadcastRtmp.addEventListener('change', () => {
     const opacity = broadcastRtmp.checked ? '1' : '0.2';
     broadcastRtmpOptions.style.opacity = opacity;
   });
 
-  document.getElementById('start-archive-btn').addEventListener('click', () => {
+  document.getElementById('start-archive-btn').addEventListener('click', async () => {
     const resolution = document.querySelector('input[name="archiveResolution"]:checked').value;
     const outputMode = document.querySelector('input[name="archiveOutputMode"]:checked').value;
 
     log(`startArchive  ${resolution} ${outputMode}`);
-    fetch(`/startArchive/${sessionId}${location.search}`, {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        outputMode,
-        resolution: (outputMode === 'composed' && resolution) || undefined,
-      }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        archiveId = data.id;
-        log(JSON.stringify(data, null, 2));
+    try {
+      const resp = await fetch(`/startArchive/${sessionId}${location.search}`, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          outputMode,
+          resolution: (outputMode === 'composed' && resolution) || undefined,
+        }),
       });
+
+      const data = await resp.json();
+
+      archiveId = data.id;
+      log(JSON.stringify(data, null, 2));
+    } catch (err) {
+      log(err, 'error');
+    }
   });
 
   document.getElementById('stop-archive-btn').addEventListener('click', () => {
@@ -103,8 +108,8 @@ window.addEventListener('DOMContentLoaded', () => {
     fetch(`/stopArchive/${archiveId}${location.search}`, {
       method: 'get',
     })
-      .then((response) => response.json())
-      .then((data) => {
+      .then(response => response.json())
+      .then(data => {
         archiveId = data.id;
         log(JSON.stringify(data, null, 2));
       });
@@ -113,12 +118,12 @@ window.addEventListener('DOMContentLoaded', () => {
     log(`deleteArchive ${lastArchiveId}`);
     fetch(`/deleteArchive/${lastArchiveId}${location.search}`, {
       method: 'get',
-    }).then((response) => {
+    }).then(response => {
       if (response.status === 200) {
         document.getElementById('delete-archive-btn').disabled = true;
         return log('archive deleted.');
       }
-      return response.text().then((data) => {
+      return response.text().then(data => {
         log(`deleteArchive error: ${data}`);
       });
     });
@@ -132,11 +137,15 @@ window.addEventListener('DOMContentLoaded', () => {
     const broadcastOptions = {
       resolution,
       outputs: {
-        hls: hls.checked ? { } : undefined,
-        rtmp: rtmp.checked ? [{
-          serverUrl: rtmpUrl,
-          streamName: 'testStream',
-        }] : [],
+        hls: hls.checked ? {} : undefined,
+        rtmp: rtmp.checked
+          ? [
+              {
+                serverUrl: rtmpUrl,
+                streamName: 'testStream',
+              },
+            ]
+          : [],
       },
     };
 
@@ -149,8 +158,8 @@ window.addEventListener('DOMContentLoaded', () => {
       },
       body: JSON.stringify(broadcastOptions),
     })
-      .then((response) => response.json())
-      .then((data) => {
+      .then(response => response.json())
+      .then(data => {
         broadcastId = data.id;
         log(JSON.stringify(data, null, 2));
       });
@@ -161,8 +170,8 @@ window.addEventListener('DOMContentLoaded', () => {
     fetch(`/stopBroadcast/${broadcastId}${location.search}`, {
       method: 'get',
     })
-      .then((response) => response.json())
-      .then((data) => {
+      .then(response => response.json())
+      .then(data => {
         log(JSON.stringify(data, null, 2));
       });
   });
@@ -170,25 +179,33 @@ window.addEventListener('DOMContentLoaded', () => {
   document.getElementById('force-disconnect-btn').addEventListener('click', () => {
     fetch(`/forceDisconnect/${sessionId}/${session.connection.id}${location.search}`, {
       method: 'get',
-    }).then(() => { log('forced to disconnect'); });
+    }).then(() => {
+      log('forced to disconnect');
+    });
   });
 
   document.getElementById('force-mute-all-btn').addEventListener('click', () => {
     fetch(`/forceMuteAll/${sessionId}${location.search}`, {
       method: 'get',
-    }).then(() => { log('session muted'); });
+    }).then(() => {
+      log('session muted');
+    });
   });
 
   document.getElementById('force-mute-stream-btn').addEventListener('click', () => {
     fetch(`/forceMuteStream/${sessionId}/${streamId}${location.search}`, {
       method: 'get',
-    }).then(() => { log('stream muted'); });
+    }).then(() => {
+      log('stream muted');
+    });
   });
 
   document.getElementById('disable-force-mute-btn').addEventListener('click', () => {
     fetch(`/disableForceMute/${sessionId}${location.search}`, {
       method: 'get',
-    }).then(() => { log('force mute disabled'); });
+    }).then(() => {
+      log('force mute disabled');
+    });
   });
 
   document.getElementById('signal-me-btn').addEventListener('click', () => {
@@ -208,39 +225,46 @@ window.addEventListener('DOMContentLoaded', () => {
     fetch(`/listStreams/${sessionId}${location.search}`, {
       method: 'get',
     })
-      .then((response) => response.json())
-      .then((data) => { log(JSON.stringify(data, null, 2)); });
+      .then(response => response.json())
+      .then(data => {
+        log(JSON.stringify(data, null, 2));
+      });
   });
 
   document.getElementById('get-stream-btn').addEventListener('click', () => {
     fetch(`/getStream/${sessionId}/${streamId}${location.search}`, {
       method: 'get',
     })
-      .then((response) => response.json())
-      .then((data) => { log(JSON.stringify(data, null, 2)); });
+      .then(response => response.json())
+      .then(data => {
+        log(JSON.stringify(data, null, 2));
+      });
   });
 
   document.getElementById('list-archives-btn').addEventListener('click', () => {
     fetch(`/listArchives/${sessionId}${location.search}`, {
       method: 'get',
     })
-      .then((response) => response.json())
-      .then((data) => { log(JSON.stringify(data, null, 2)); });
+      .then(response => response.json())
+      .then(data => {
+        log(JSON.stringify(data, null, 2));
+      });
   });
 
   document.getElementById('list-broadcasts-btn').addEventListener('click', () => {
     fetch(`/listBroadcasts/${sessionId}${location.search}`, {
       method: 'get',
     })
-      .then((response) => response.json())
-      .then((data) => { log(JSON.stringify(data, null, 2)); });
+      .then(response => response.json())
+      .then(data => {
+        log(JSON.stringify(data, null, 2));
+      });
   });
 
   document.getElementById('set-class-list-btn').addEventListener('click', () => {
     fetch(`/setStreamClassLists/${sessionId}/${streamId}${location.search}`, {
       method: 'get',
-    })
-      .then(log('stream class list updated'));
+    }).then(log('stream class list updated'));
   });
 });
 
